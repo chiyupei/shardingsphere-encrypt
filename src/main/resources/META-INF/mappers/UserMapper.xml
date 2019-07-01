@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.inspur.shardingsphere.mybatis.repository.UserRepository">
+    <resultMap id="baseResultMap" type="com.inspur.shardingsphere.mybatis.entity.User">
+        <result column="user_id" property="userId" jdbcType="INTEGER"/>
+        <result column="user_name" property="userName" jdbcType="VARCHAR"/>
+        <result column="pwd" property="pwd" jdbcType="VARCHAR"/>
+        <result column="assisted_query_pwd" property="assistedQueryPwd" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <update id="createTableIfNotExists">
+        CREATE TABLE IF NOT EXISTS t_user (user_id INT NOT NULL AUTO_INCREMENT, user_name VARCHAR(200), pwd VARCHAR(200), assisted_query_pwd VARCHAR(200), PRIMARY KEY (user_id));
+    </update>
+
+    <update id="truncateTable">
+        TRUNCATE TABLE t_user;
+    </update>
+
+    <update id="dropTable">
+        DROP TABLE IF EXISTS t_user;
+    </update>
+
+    <insert id="insert">
+        INSERT INTO t_user (user_id, user_name, pwd) VALUES (#{userId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{pwd,jdbcType=VARCHAR})
+    </insert>
+
+    <delete id="delete">
+        DELETE FROM t_user WHERE user_id = #{userId,jdbcType=INTEGER};
+    </delete>
+
+    <select id="selectAll" resultMap="baseResultMap">
+--         SELECT * FROM t_user;
+        SELECT T.* FROM t_user T left join t_user M on M.user_name=T.user_name;
+    </select>
+
+    <select id="selectOne" resultType="map">
+        SELECT T.* FROM T_USER T left join t_user M on M.user_id=T.user_id where T.user_id = '1';
+--         SELECT T.* FROM T_USER T where T.USER_NAME = 'test_mybatis_1';
+    </select>
+</mapper>
